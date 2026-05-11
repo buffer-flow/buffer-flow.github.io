@@ -1,0 +1,67 @@
+export type ExtensionType = 'linkem' | 'showem'
+
+export interface ExtensionMessage {
+  [key: string]: unknown
+}
+
+/**
+ * Send a message to an extension
+ */
+export async function browserMessageSend(
+  extensionName: ExtensionType,
+  messageName: string,
+  data: ExtensionMessage,
+) {
+  const messageAction = `${extensionName}-${messageName}`;
+  window.postMessage({ action: messageAction, ...data }, '*');
+}
+
+/**
+ * Listen for a specific response message from an extension
+ */
+export function browserMessageListen(
+  extensionName: ExtensionType,
+  messageName: string,
+  callback: (data: ExtensionMessage) => void,
+) {
+  const messageAction = `${extensionName}-${messageName}`;
+  function listener(event: MessageEvent) {
+    if (event.source == window && event.data.action && event.data.action == messageAction) {
+      callback(event.data.data);
+    }
+  }
+
+  window.addEventListener("message", listener);
+  return () => { window.removeEventListener("message", listener); }
+}
+
+export function browserMessageRequest(
+  extensionName: ExtensionType,
+  messageName: string,
+  data: ExtensionMessage,
+  timeout: number = 1000,
+  retries: number = 3,
+) {
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    const responseName = messageName === 'ping' ? 'pong' : `${messageName}-completed`;
+    browserMessageListen(extensionName, responseName, (response) => {
+      resolved = true;
+      resolve(response);
+    });
+
+    function sendMessage(attempt: number) {
+      if (resolved) return;
+      if (attempt > retries) {
+        reject(`Extension did not respond after ${retries} tries.`);
+      } else {
+        browserMessageSend(extensionName, messageName, data);
+        setTimeout(() => {
+          sendMessage(attempt + 1);
+        }, timeout);
+      }
+    }
+
+    sendMessage(0);
+  });
+}
