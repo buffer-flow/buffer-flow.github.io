@@ -1,27 +1,26 @@
 import { AnimatedBackground } from '../components/AnimatedBackground'
 import { ProductButton } from '../components/ProductButton'
-import './HomePage.css'
 
 export function HomePage() {
   return (
     <>
       <AnimatedBackground />
-      <main className="home-container">
-        <div className="home-content">
-          <section className="about-section">
-            <h1>BufferFlow</h1>
-            <p className="tagline">
+      <main className="flex items-center justify-center min-h-screen w-full p-8 relative z-10">
+        <div className="max-w-3xl w-full text-white text-center">
+          <section className="mb-12">
+            <h1 className="text-6xl font-bold mb-4 text-shadow">BufferFlow</h1>
+            <p className="text-2xl font-light mb-6 opacity-95">
               Simplify how you share and explain web experiences
             </p>
-            <p className="description">
+            <p className="text-lg opacity-90 leading-relaxed">
               BufferFlow provides browser extensions that make it easy to create, 
               annotate, and share interactive web experiences with your team.
             </p>
           </section>
 
-          <section className="products-section">
-            <h2>Our Products</h2>
-            <div className="products-grid">
+          <section>
+            <h2 className="text-4xl font-bold mb-8 opacity-95">Our Products</h2>
+            <div className="flex flex-wrap justify-center gap-8">
               <ProductButton
                 name="Link'em"
                 path="/linkem"
