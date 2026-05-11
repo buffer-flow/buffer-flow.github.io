@@ -8,7 +8,6 @@ import {
   type ExtensionType,
   type ExtensionMessage,
 } from '../lib/extensionMessaging'
-import './MsgPage.css'
 
 export function MsgPage() {
   const [searchParams] = useSearchParams()
@@ -126,23 +125,23 @@ export function MsgPage() {
   return (
     <>
       <AnimatedBackground />
-      <div className="msg-page">
-        <div className="msg-container">
+      <div className="flex items-center justify-center min-h-screen p-8 relative z-10">
+        <div className="w-full max-w-2xl">
           {error && (
-            <div className="msg-error">
-              <h2>Configuration Error</h2>
+            <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-8 text-center text-white">
+              <h2 className="text-2xl font-semibold mb-4">Configuration Error</h2>
               <p>{error}</p>
             </div>
           )}
 
           {!error && extensionFound === false && (
-            <div className="msg-box">
-              <h1>Extension Not Found</h1>
-              <p>The {getProductName(extensionType)} extension is not installed.</p>
-              <p>Please install the extension to continue.</p>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-12 text-center text-white">
+              <h1 className="text-3xl font-bold mb-4 text-shadow">Extension Not Found</h1>
+              <p className="mb-2">The {getProductName(extensionType)} extension is not installed.</p>
+              <p className="mb-6">Please install the extension to continue.</p>
               
-              <div className="install-link-section">
-                <p className="checking-note">
+              <div className="space-y-4">
+                <p className="text-sm opacity-90">
                   If you've just installed the extension, this page will update automatically in 10 seconds.
                 </p>
                 <a
@@ -153,31 +152,35 @@ export function MsgPage() {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="install-btn"
+                  className="inline-block px-8 py-3 bg-white/20 hover:bg-white/30 border border-white/30 rounded-lg transition-all duration-300 font-medium"
                 >
                   Install {getProductName(extensionType)}
                 </a>
-                <p className="checking-status">
-                  {checkAttempts > 0 && `(Checked ${checkAttempts} times...)`}
-                </p>
+                {checkAttempts > 0 && (
+                  <p className="text-sm opacity-75">
+                    (Checked {checkAttempts} times...)
+                  </p>
+                )}
               </div>
             </div>
           )}
 
           {!error && extensionFound && isProcessing && (
-            <div className="msg-box">
-              <h1>Processing</h1>
-              <p>Sending request to {getProductName(extensionType)}...</p>
-              <div className="spinner"></div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-12 text-center text-white">
+              <h1 className="text-3xl font-bold mb-4 text-shadow">Processing</h1>
+              <p className="mb-6">Sending request to {getProductName(extensionType)}...</p>
+              <div className="flex justify-center">
+                <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
             </div>
           )}
 
           {!error && extensionFound && success && (
-            <div className="msg-box success">
-              <h1>Success!</h1>
-              <p>Your action has been completed successfully.</p>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-12 text-center text-white">
+              <h1 className="text-3xl font-bold mb-4 text-shadow">Success!</h1>
+              <p className="mb-4">Your action has been completed successfully.</p>
               {!redirectUrl && (
-                <p className="close-message">You can now close this page.</p>
+                <p className="text-sm opacity-90">You can now close this page.</p>
               )}
               {redirectUrl && (
                 <p>Redirecting you now...</p>
@@ -186,10 +189,12 @@ export function MsgPage() {
           )}
 
           {!error && extensionFound === null && (
-            <div className="msg-box">
-              <h1>Checking Installation</h1>
-              <p>Please wait...</p>
-              <div className="spinner"></div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-12 text-center text-white">
+              <h1 className="text-3xl font-bold mb-4 text-shadow">Checking Installation</h1>
+              <p className="mb-6">Please wait...</p>
+              <div className="flex justify-center">
+                <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
             </div>
           )}
         </div>
