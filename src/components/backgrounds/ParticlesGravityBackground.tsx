@@ -1,6 +1,7 @@
 
 import { useRef } from 'react';
 import { ResizingCanvas } from './ResizingCanvas';
+import { SpatialGrid } from './SpatialGrid';
 
 interface Particle {
   x: number;
@@ -37,18 +38,18 @@ export interface ParticlesGravityBackgroundProps {
 }
 
 export function ParticlesGravityBackground({
-  spawnIntervalMs = 400,
+  spawnIntervalMs = 600,
   minParticleSize = 0.5,
   maxParticleSize = 3,
   largeSizeProbability = 0.05,
   largeParticleSize = 5,
-  gravityStrength = 50000,
-  maxParticles = 500,
+  gravityStrength = 30000,
+  maxParticles = 200,
   spawnMargin = 50,
-  initialVelocityRange = [60, 120],
-  damping = 0.999,
+  initialVelocityRange = [60, 120]
 }: ParticlesGravityBackgroundProps = {}) {
   const particlesRef = useRef<Particle[]>([]);
+  const spatialGridRef = useRef<SpatialGrid<Particle>>(new SpatialGrid(1, 1, 100));
   const lastSpawnTimeRef = useRef<number>(Date.now());
 
 
@@ -106,6 +107,13 @@ export function ParticlesGravityBackground({
 
   const updateParticles = (deltaTime: number, width: number, height: number) => {
     if (width <= 0 || height <= 0) return;
+    
+    // Resize grid if canvas size changed significantly
+    const grid = spatialGridRef.current;
+    if (Math.abs(grid['width'] - width) > 10 || Math.abs(grid['height'] - height) > 10) {
+      grid.resize(width, height);
+    }
+
     const dt = Math.min(deltaTime / 1000, 0.016); // cap at 60fps frame time
 
     // Spawn new particles
@@ -120,14 +128,21 @@ export function ParticlesGravityBackground({
     const collisionMargin = spawnMargin + 100; // Allow particles to travel beyond spawn margin
     const toRemove = new Set<number>(); // Track particles to merge
 
-    // Check for collisions first
+    // Rebuild spatial grid for this frame
+    grid.rebuild(particles);
+
+    // Check for collisions using spatial grid
     for (let i = 0; i < particles.length; i++) {
       if (toRemove.has(i)) continue;
       const p = particles[i];
 
-      for (let j = i + 1; j < particles.length; j++) {
-        if (toRemove.has(j)) continue;
-        const other = particles[j];
+      // Only check nearby particles instead of all particles
+      const nearby = grid.getNearby(p.x, p.y, 1); // Check this cell and neighboring cells
+
+      for (const other of nearby) {
+        // Find the index of 'other' in the particles array for marking removal
+        const jIndex = particles.indexOf(other);
+        if (jIndex <= i || toRemove.has(jIndex)) continue;
 
         const dx = other.x - p.x;
         const dy = other.y - p.y;
@@ -153,7 +168,7 @@ export function ParticlesGravityBackground({
           p.size = Math.cbrt(p.mass);
 
           // Mark other particle for removal
-          toRemove.add(j);
+          toRemove.add(jIndex);
         }
       }
     }
@@ -167,11 +182,12 @@ export function ParticlesGravityBackground({
       let ax = 0;
       let ay = 0;
 
-      // Calculate gravitational forces from all other particles
-      for (let j = 0; j < particlesRef.current.length; j++) {
-        if (i === j) continue;
+      // Use spatial grid to find nearby particles for gravity calculations
+      const nearby = grid.getNearby(p.x, p.y, 2); // Check a slightly larger search radius for gravity
 
-        const other = particlesRef.current[j];
+      for (const other of nearby) {
+        if (other === p) continue;
+
         const dx = other.x - p.x;
         const dy = other.y - p.y;
         const distSq = dx * dx + dy * dy;
@@ -191,10 +207,6 @@ export function ParticlesGravityBackground({
       // Update velocity with acceleration
       p.vx += ax * dt;
       p.vy += ay * dt;
-
-      // Apply damping
-      p.vx *= damping;
-      p.vy *= damping;
 
       // Update position
       p.x += p.vx * dt;
