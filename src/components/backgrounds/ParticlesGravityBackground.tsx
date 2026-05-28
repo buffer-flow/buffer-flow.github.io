@@ -4,6 +4,7 @@ import { ResizingCanvas } from './ResizingCanvas';
 import { SpatialGrid } from './SpatialGrid';
 
 interface Particle {
+  id: number;
   x: number;
   y: number;
   vx: number;
@@ -25,8 +26,8 @@ export interface ParticlesGravityBackgroundProps {
   largeParticleSize?: number;
   /** Gravity strength multiplier (default: 0.5) */
   gravityStrength?: number;
-  /** Maximum number of particles (default: 500) */
-  maxParticles?: number;
+  /** Maximum number of particles per pixel */
+  maxParticlesPerPixel?: number;
   /** Particle color (CSS color, default: 'rgba(200, 150, 255, 0.6)') */
   particleColor?: string;
   /** Margin outside canvas from which particles spawn (default: 50) */
@@ -39,24 +40,27 @@ export interface ParticlesGravityBackgroundProps {
 
 export function ParticlesGravityBackground({
   spawnIntervalMs = 600,
-  minParticleSize = 0.5,
-  maxParticleSize = 3,
-  largeSizeProbability = 0.05,
-  largeParticleSize = 5,
-  gravityStrength = 30000,
-  maxParticles = 200,
+  minParticleSize = 1.2,
+  maxParticleSize = 8,
+  largeSizeProbability = 0.02,
+  largeParticleSize = 14,
+  gravityStrength = 3000,
+  maxParticlesPerPixel = 0.00002,
   spawnMargin = 50,
   initialVelocityRange = [60, 120]
 }: ParticlesGravityBackgroundProps = {}) {
   const particlesRef = useRef<Particle[]>([]);
-  const spatialGridRef = useRef<SpatialGrid<Particle>>(new SpatialGrid(1, 1, 100));
+  const spatialGridRef = useRef<SpatialGrid<Particle>>(new SpatialGrid(1, 1, 50));
   const lastSpawnTimeRef = useRef<number>(Date.now());
-
+  const outOfBoundsMargin = spawnMargin * 2;
+  let totalSpawned = 0;
 
   const spawnParticle = (width: number, height: number) => {
+    const maxParticles = (width * height) * maxParticlesPerPixel;
     if (particlesRef.current.length >= maxParticles) return;
 
-    const size = Math.random() < largeSizeProbability ? largeParticleSize : minParticleSize + Math.random() * (maxParticleSize - minParticleSize);
+    const size = Math.random() < largeSizeProbability ? largeParticleSize
+      : minParticleSize + Math.random() * (maxParticleSize - minParticleSize);
     const mass = (size * size * size);
 
     // Spawn from outside canvas edges
@@ -96,6 +100,7 @@ export function ParticlesGravityBackground({
     }
 
     particlesRef.current.push({
+      id: totalSpawned++,
       x,
       y,
       vx,
@@ -123,62 +128,52 @@ export function ParticlesGravityBackground({
       lastSpawnTimeRef.current = now;
     }
 
-    const particles = particlesRef.current;
-    const G = gravityStrength * 0.1; // Gravity constant
-    const collisionMargin = spawnMargin + 100; // Allow particles to travel beyond spawn margin
-    const toRemove = new Set<number>(); // Track particles to merge
+    let particles = particlesRef.current;
 
     // Rebuild spatial grid for this frame
     grid.rebuild(particles);
 
     // Check for collisions using spatial grid
     for (let i = 0; i < particles.length; i++) {
-      if (toRemove.has(i)) continue;
       const p = particles[i];
-
-      // Only check nearby particles instead of all particles
-      const nearby = grid.getNearby(p.x, p.y, 1); // Check this cell and neighboring cells
-
-      for (const other of nearby) {
-        // Find the index of 'other' in the particles array for marking removal
-        const jIndex = particles.indexOf(other);
-        if (jIndex <= i || toRemove.has(jIndex)) continue;
+      if (p.mass === 0) continue;
+      for (const other of grid.getNearby(p.x, p.y, 1)) {
+        if (other.mass === 0 || other.id <= p.id) continue;
 
         const dx = other.x - p.x;
         const dy = other.y - p.y;
         const distSq = dx * dx + dy * dy;
-        const minDist = (p.size + other.size) * 0.5;
+        const minDist = (p.size + other.size) / 2;
         const minDistSq = minDist * minDist;
 
-        // Check for collision and merge particles
-        if (distSq <= minDistSq) {
-          const totalMass = p.mass + other.mass;
-          const massRatio = p.mass / totalMass;
-          const otherMassRatio = other.mass / totalMass;
+        if (distSq > minDistSq) continue;
 
-          p.x = p.x * massRatio + other.x * otherMassRatio;
-          p.y = p.y * massRatio + other.y * otherMassRatio;
+        // If these particles collide, merge them
+        const totalMass = p.mass + other.mass;
+        const massRatio = p.mass / totalMass;
+        const otherMassRatio = other.mass / totalMass;
 
-          // Combine velocity using momentum conservation
-          p.vx = p.vx * massRatio + other.vx * otherMassRatio;
-          p.vy = p.vy * massRatio + other.vy * otherMassRatio;
-          p.mass = totalMass;
+        p.x = p.x * massRatio + other.x * otherMassRatio;
+        p.y = p.y * massRatio + other.y * otherMassRatio;
 
-          // Update size based on new mass
-          p.size = Math.cbrt(p.mass);
+        // Combine velocity using momentum conservation
+        p.vx = p.vx * massRatio + other.vx * otherMassRatio;
+        p.vy = p.vy * massRatio + other.vy * otherMassRatio;
+        p.mass = totalMass;
 
-          // Mark other particle for removal
-          toRemove.add(jIndex);
-        }
+        // Update size based on new mass
+        p.size = Math.cbrt(p.mass);
+
+        // Mark other particle for removal
+        other.mass = 0;
+        other.size = 0;
       }
     }
 
-    // Remove merged particles
-    particlesRef.current = particles.filter((_, index) => !toRemove.has(index));
-
     // Update remaining particles with physics
-    for (let i = 0; i < particlesRef.current.length; i++) {
-      const p = particlesRef.current[i];
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.mass === 0) continue;
       let ax = 0;
       let ay = 0;
 
@@ -186,22 +181,16 @@ export function ParticlesGravityBackground({
       const nearby = grid.getNearby(p.x, p.y, 2); // Check a slightly larger search radius for gravity
 
       for (const other of nearby) {
-        if (other === p) continue;
+        if (other === p || other.mass === 0) continue;
 
         const dx = other.x - p.x;
         const dy = other.y - p.y;
         const distSq = dx * dx + dy * dy;
-        const minDist = (p.size + other.size) * 0.5;
-        const minDistSq = minDist * minDist;
+        const force = (gravityStrength * other.mass) / distSq;
 
-        // Only apply gravity if particles are reasonably far apart
-        if (distSq > minDistSq && distSq < 100000) {
-          const dist = Math.sqrt(distSq);
-          const force = (G * other.mass) / distSq;
-
-          ax += (force * dx) / dist / p.mass;
-          ay += (force * dy) / dist / p.mass;
-        }
+        const dist = Math.sqrt(distSq);
+        ax += force * (dx / dist) / p.mass;
+        ay += force * (dy / dist) / p.mass;
       }
 
       // Update velocity with acceleration
@@ -213,13 +202,14 @@ export function ParticlesGravityBackground({
       p.y += p.vy * dt;
     }
 
-    // Remove particles that are out of bounds
-    particlesRef.current = particlesRef.current.filter(
+    // Remove particles that are out of bounds or have no mass anymore
+    particlesRef.current = particles.filter(
       (p) =>
-        p.x > -collisionMargin &&
-        p.x < width + collisionMargin &&
-        p.y > -collisionMargin &&
-        p.y < height + collisionMargin
+        p.x > -outOfBoundsMargin &&
+        p.x < width + outOfBoundsMargin &&
+        p.y > -outOfBoundsMargin &&
+        p.y < height + outOfBoundsMargin &&
+        p.mass > 0
     );
   };
 
@@ -276,7 +266,7 @@ export function ParticlesGravityBackground({
       // Create radial gradient for star effect
       const starGradient = ctx.createRadialGradient(
         particle.x, particle.y, 0,
-        particle.x, particle.y, particle.size * 3
+        particle.x, particle.y, particle.size * 2
       );
       
       // Bright center fading to transparent edges for soft glow
@@ -287,7 +277,7 @@ export function ParticlesGravityBackground({
       
       ctx.fillStyle = starGradient;
       ctx.beginPath();
-      ctx.arc(particle.x, particle.y, particle.size * 3, 0, Math.PI * 2);
+      ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
       ctx.fill();
     }
   };

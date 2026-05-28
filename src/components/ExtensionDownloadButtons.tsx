@@ -18,9 +18,9 @@ export function ExtensionDownloadButtons({ extensionId }: ExtensionDownloadButto
       )}
       {/* All the other browser links smaller below it */}
       <div className="flex flex-row justify-center items-center flex-wrap gap-2">
-        {Object.keys(extensionInfo.installLinks).filter(b => b !== currentBrowser).map(b => (
+        {Object.keys(extensionInfo.installLinks).filter(b => b !== currentBrowser).map((b, i) => (
           // @ts-ignore
-          <ExtensionDownloadButton extensionInfo={extensionInfo} browserId={b} bigger={false} />
+          <ExtensionDownloadButton key={i} extensionInfo={extensionInfo} browserId={b} bigger={false} />
         ))}
       </div>
     </div>
