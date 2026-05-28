@@ -1,4 +1,4 @@
-export type ExtensionType = 'linkem' | 'showem'
+import type { ExtensionId } from "./knownExtensions";
 
 export interface ExtensionMessage {
   [key: string]: unknown
@@ -8,7 +8,7 @@ export interface ExtensionMessage {
  * Send a message to an extension
  */
 export async function browserMessageSend(
-  extensionName: ExtensionType,
+  extensionName: ExtensionId,
   messageName: string,
   data: ExtensionMessage,
 ) {
@@ -20,7 +20,7 @@ export async function browserMessageSend(
  * Listen for a specific response message from an extension
  */
 export function browserMessageListen(
-  extensionName: ExtensionType,
+  extensionName: ExtensionId,
   messageName: string,
   callback: (data: ExtensionMessage) => void,
 ) {
@@ -36,7 +36,7 @@ export function browserMessageListen(
 }
 
 export function browserMessageRequest(
-  extensionName: ExtensionType,
+  extensionName: ExtensionId,
   messageName: string,
   data: ExtensionMessage,
   timeout: number = 1000,
