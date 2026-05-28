@@ -31,27 +31,22 @@ export function LinkemPage() {
               </li>
               <li className="relative pl-8 text-lg leading-relaxed opacity-90">
                 <span className="absolute left-0 text-xl font-bold text-cyan-300">✓</span>
-                Organize and categorize your links
+                Generalize links to similar pages or elements
               </li>
               <li className="relative pl-8 text-lg leading-relaxed opacity-90">
                 <span className="absolute left-0 text-xl font-bold text-cyan-300">✓</span>
-                Share annotated pages with your team
+                Share useful links with your team
               </li>
               <li className="relative pl-8 text-lg leading-relaxed opacity-90">
                 <span className="absolute left-0 text-xl font-bold text-cyan-300">✓</span>
-                Store links for future reference
-              </li>
-              <li className="relative pl-8 text-lg leading-relaxed opacity-90">
-                <span className="absolute left-0 text-xl font-bold text-cyan-300">✓</span>
-                Visual link management interface
+                Add labels or markings in a website
               </li>
             </ul>
           </section>
 
           <section className="mb-8 space-y-4 rounded-xl border border-white/20 bg-white/10 p-8 backdrop-blur-md">
             <h2 className="text-3xl font-bold">Get Started</h2>
-            <p className="text-lg leading-relaxed opacity-90">Install the Link'em extension from your browser's extension store.</p>
-            <a href={LINKEM_DEMO_URL} className="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
+            <a href={LINKEM_DEMO_URL} className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
               Try the Demo
             </a>
           </section>

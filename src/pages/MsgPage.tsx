@@ -52,7 +52,7 @@ function useDetectAndSendAction({ extensionId, actionName, actionData, redirectU
     if (detectAndActionState !== 'success' || !redirectUrl) return;
     
     if (redirectTimer === null) {
-      setRedirectTimer(3);
+      setRedirectTimer(5);
       return;
     }
 
@@ -101,11 +101,11 @@ function DetectAndSendActionView({ extensionId, actionName, actionData, redirect
           ) : detectAndActionState === 'success' ? (
             <div className="border border-white/20 rounded-xl p-12 text-center text-white">
               <h1 className="text-3xl font-bold mb-4 text-shadow">{niceActionName.slice(0, 1).toUpperCase() + niceActionName.slice(1)} complete!</h1>
-              {redirectTimer !== null ? (
+              {redirectUrl ? (
                 <p>
-                  Redirecting you to
-                  <a href={redirectUrl}>{redirectUrl}</a>
-                  in {redirectTimer} seconds...
+                  Redirecting you to{" "}
+                  <a href={redirectUrl} className='text-blue-500 underline'>{new URL(redirectUrl).hostname}</a>
+                  {" "}in {redirectTimer} seconds...
                 </p>
               ) : (
                 <p className="text-sm opacity-90">You can now close this page.</p>
