@@ -1,10 +1,8 @@
-import { AnimatedBackground } from '../components/AnimatedBackground'
 import { ProductButton } from '../components/ProductButton'
 
 export function HomePage() {
   return (
     <>
-      <AnimatedBackground />
       <main className="flex items-center justify-center min-h-screen w-full p-8 relative z-10">
         <div className="max-w-3xl w-full text-white text-center">
           <section className="mb-12">

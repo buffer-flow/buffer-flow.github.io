@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { AnimatedBackground } from '../components/AnimatedBackground'
 import {
   browserMessageRequest,
   type ExtensionMessage,
@@ -65,7 +64,6 @@ export function MsgView({ extensionType, actionName, actionData, redirectUrl }: 
   const productName = extensionType === 'linkem' ? 'Link\'em' : extensionType === 'showem' ? 'Show\'em' : 'Unknown';
   return (
     <>
-      <AnimatedBackground />
       <div className="flex items-center justify-center min-h-screen p-8 relative z-10">
         <div className="w-full max-w-2xl">
           {extensionFound === null ? (

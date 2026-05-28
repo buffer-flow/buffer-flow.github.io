@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom'
-import { AnimatedBackground } from '../components/AnimatedBackground'
 
 export function ShowemPage() {
   return (
     <>
-      <AnimatedBackground />
       <div className="relative z-10 min-h-screen p-8 pt-16 text-white md:p-8">
         <div className="mx-auto mb-12 max-w-3xl">
           <Link to="/" className="mb-6 inline-block text-white/80 transition-opacity duration-300 hover:opacity-100">← Back to Home</Link>

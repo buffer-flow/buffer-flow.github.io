@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { AnimatedBackground } from '../components/AnimatedBackground'
 
 
 const LINKEM_DEMO_URL = 'https://buffer-flow.github.io/#/msg?for=linkem&name=import-link&base64=eyJjb25kaXRpb25zIjpbeyJjcmVhdGVkX2F0IjoiIiwiaWQiOiIiLCJsaW5rX2lkIjoiIiwidHlwZSI6InVybF9zdGFydCIsInZhbHVlIjoiaHR0cHM6Ly93d3cuZ29vZHJlYWRzLmNvbS9ib29rL3Nob3cvNjA1MzE0MDYtdHJlc3Mtb2YtdGhlLWVtZXJhbGQtc2VhIn0seyJjcmVhdGVkX2F0IjoiIiwiaWQiOiIiLCJsaW5rX2lkIjoiIiwidHlwZSI6InhwYXRoX2V4aXN0cyIsInZhbHVlIjoiLy9kaXZbQGlkPVwiX19uZXh0XCJdL2RpdlsyXS9tYWluWzFdL2RpdlsxXS9kaXZbMl0vZGl2WzJdL2RpdlsxXS9kaXZbMV0vaDFbMV0ifV0sImNyZWF0ZWRfYXQiOiIyMDI2LTA1LTExVDE4OjU0OjAxLjc5MloiLCJkaXNwbGF5X25hbWUiOiJDbGljayBoZXJlIiwiaHJlZl9mb3JtYXQiOiJodHRwczovL3d3dy5nb29nbGUuY29tL3NlYXJjaD9xPXt0ZXh0LXZhbHVlfSIsImljb24iOm51bGwsImlkIjoibG9jYWwtYzU2MDhmNjQtMTNkYi00Y2JmLWE3NzctMzZjNDU3N2YyYzc4LTc0OWU0YTZiLTEzNjItNDA0NC1iNDUxLWRhYWZjZDlhMjdkYSIsIm5hbWUiOiJMaW5rIG9uIEVtZXJhbGQiLCJvbl9zZWxlY3RlZF90ZXh0X3JlZ2V4IjoiRW1lcmFsZCIsIm9uX3hwYXRoIjoiLy9kaXZbQGlkPVwiX19uZXh0XCJdL2RpdlsyXS9tYWluWzFdL2RpdlsxXS9kaXZbMl0vZGl2WzJdL2RpdlsxXS9kaXZbMV0vaDFbMV0iLCJwb3NpdGlvbiI6Im5leHRfdG9fdGV4dCIsInVwZGF0ZWRfYXQiOiIyMDI2LTA1LTExVDE4OjU0OjAxLjc5MloiLCJ1c2VyX2lkIjoibG9jYWwtYzU2MDhmNjQtMTNkYi00Y2JmLWE3NzctMzZjNDU3N2YyYzc4IiwidmlzaWJpbGl0eSI6InByaXZhdGUifQ==&redirectUrl=https://www.goodreads.com/book/show/60531406-tress-of-the-emerald-sea';
@@ -7,7 +6,6 @@ const LINKEM_DEMO_URL = 'https://buffer-flow.github.io/#/msg?for=linkem&name=imp
 export function LinkemPage() {
   return (
     <>
-      <AnimatedBackground />
       <div className="relative z-10 min-h-screen p-8 pt-16 text-white md:p-8">
         <div className="mx-auto mb-12 max-w-3xl">
           <Link to="/" className="mb-6 inline-block text-white/80 transition-opacity duration-300 hover:opacity-100">← Back to Home</Link>

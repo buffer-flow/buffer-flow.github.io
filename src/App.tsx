@@ -3,10 +3,12 @@ import { HomePage } from './pages/HomePage'
 import { LinkemPage } from './pages/LinkemPage'
 import { ShowemPage } from './pages/ShowemPage'
 import { MsgPage } from './pages/MsgPage'
+import { AnimatedBackground } from './components/AnimatedBackground'
 
 function App() {
   return (
     <HashRouter>
+      <AnimatedBackground />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/linkem" element={<LinkemPage />} />
