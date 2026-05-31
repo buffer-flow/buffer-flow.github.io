@@ -115,9 +115,7 @@ export function ParticlesGravityBackground({
     
     // Resize grid if canvas size changed significantly
     const grid = spatialGridRef.current;
-    if (Math.abs(grid['width'] - width) > 10 || Math.abs(grid['height'] - height) > 10) {
-      grid.resize(width, height);
-    }
+    grid.resize(width, height);
 
     const dt = Math.min(deltaTime / 1000, 0.016); // cap at 60fps frame time
 

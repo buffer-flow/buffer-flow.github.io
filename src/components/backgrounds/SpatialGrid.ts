@@ -6,14 +6,10 @@
 export class SpatialGrid<T extends { x: number; y: number }> {
   private cellSize: number;
   private grid: Map<string, T[]>;
-  private width: number;
-  private height: number;
   private colsCount: number;
   private rowsCount: number;
 
   constructor(width: number, height: number, cellSize: number = 100) {
-    this.width = width;
-    this.height = height;
     this.cellSize = cellSize;
     this.colsCount = Math.ceil(width / cellSize);
     this.rowsCount = Math.ceil(height / cellSize);
@@ -100,8 +96,6 @@ export class SpatialGrid<T extends { x: number; y: number }> {
    * Update grid cellSize and dimensions (call when canvas resizes)
    */
   resize(width: number, height: number): void {
-    this.width = width;
-    this.height = height;
     this.colsCount = Math.ceil(width / this.cellSize);
     this.rowsCount = Math.ceil(height / this.cellSize);
     this.clear();
