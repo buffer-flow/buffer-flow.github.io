@@ -16,7 +16,7 @@ interface MsgViewProps {
 }
 
 function useDetectAndSendAction({ extensionId, actionName, actionData, redirectUrl }: MsgViewProps) {
-  const [detectAndActionState, setDetectAndActionState] = useState<undefined | 'detecting' | 'not installed' | 'processing' | 'success' | 'error'>();
+  const [detectAndActionState, setDetectAndActionState] = useState<undefined | 'detecting' | 'not installed' | 'installed' | 'processing' | 'success' | 'error'>();
   const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -26,17 +26,21 @@ function useDetectAndSendAction({ extensionId, actionName, actionData, redirectU
       setDetectAndActionState('detecting');
       try {
         await browserMessageRequest(extensionId, 'ping', {}, 1000, 3);
-        sendActionMessage();
+        setDetectAndActionState('installed');
       } catch (err) {
         setDetectAndActionState('not installed');
       }
     }
 
+    if (detectAndActionState === undefined) checkExtensionExists();
+  }, [extensionId, actionName, actionData, detectAndActionState]);
+
+  useEffect(() => {
     // If we know the extension is there, send the actual message
     async function sendActionMessage() {
       setDetectAndActionState('processing');
       try {
-        await browserMessageRequest(extensionId, actionName, actionData || {});
+        await browserMessageRequest(extensionId, actionName, actionData || {}, null, 0);
         setDetectAndActionState('success');
       } catch (err) {
         setDetectAndActionState('error');
@@ -44,8 +48,8 @@ function useDetectAndSendAction({ extensionId, actionName, actionData, redirectU
       }
     }
 
-    if (detectAndActionState === undefined) checkExtensionExists();
-  }, [extensionId, actionName, actionData, detectAndActionState]);
+    if (detectAndActionState === 'installed') sendActionMessage();
+  }, [detectAndActionState]);
 
   useEffect(() => {
     // If we completed the action and have a redirect URL, navigate there after a short delay
@@ -70,7 +74,6 @@ function useDetectAndSendAction({ extensionId, actionName, actionData, redirectU
 
 
 function DetectAndSendActionView({ extensionId, actionName, actionData, redirectUrl }: MsgViewProps) {
-  // const { detectAndActionState, actionError, redirectTimer } = { detectAndActionState: 'not installed', actionError: undefined, redirectTimer: null }
   const { detectAndActionState, actionError, redirectTimer } = useDetectAndSendAction({ extensionId, actionName, actionData, redirectUrl });
   const extensionInfo = KNOWN_EXTENSIONS[extensionId];
   const niceActionName = actionName.replaceAll('-', ' ').replaceAll('_', ' ');
@@ -83,23 +86,24 @@ function DetectAndSendActionView({ extensionId, actionName, actionData, redirect
               <h1 className="text-3xl font-bold mb-4 text-shadow">Detecting {extensionInfo.displayName} extension...</h1>
             </div>
           ) : detectAndActionState === 'not installed' ? (
-            <div className="border border-orange-500/40 rounded-xl p-12 text-center text-white">
+            <div className="border border-white/40 rounded-xl p-12 text-center text-white">
               <h1 className="text-3xl font-bold mb-4 text-shadow">Extension Not Found</h1>
               <p className="mb-2">The {extensionInfo.displayName} extension is not installed.</p>
               <p className="mb-6">Please install the extension and reload this page to continue.</p>
               <ExtensionDownloadButtons extensionId={extensionId} />
             </div>
-          ) : detectAndActionState === 'processing' ? (
+          ) : detectAndActionState === 'installed' || detectAndActionState === 'processing' ? (
             <div className="border border-white/40 rounded-xl p-12 text-center text-white">
-              <h1 className="text-3xl font-bold mb-4 text-shadow">Asking {extensionInfo.displayName} to {niceActionName}...</h1>
+              <h1 className="text-3xl font-bold mb-4 text-shadow">Asking {extensionInfo.displayName} to {niceActionName}...</h1> 
+              <div id='action-display-anchor' className='pt-6'><button className='action-button-site-style'>Click here</button></div>
             </div>
           ) : detectAndActionState === 'error' ? (
-            <div className="border border-red-500/50 rounded-xl p-8 text-center text-white">
+            <div className="border border-white/40 rounded-xl p-12 text-center text-white">
               <h2 className="text-2xl font-semibold mb-4">Configuration Error</h2>
               <p>{actionError}</p>
             </div>
           ) : detectAndActionState === 'success' ? (
-            <div className="border border-white/20 rounded-xl p-12 text-center text-white">
+            <div className="border border-white/40 rounded-xl p-12 text-center text-white">
               <h1 className="text-3xl font-bold mb-4 text-shadow">{niceActionName.slice(0, 1).toUpperCase() + niceActionName.slice(1)} complete!</h1>
               {redirectUrl ? (
                 <p>

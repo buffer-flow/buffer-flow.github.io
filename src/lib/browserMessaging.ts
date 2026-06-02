@@ -39,7 +39,7 @@ export function browserMessageRequest(
   extensionName: ExtensionId,
   messageName: string,
   data: ExtensionMessage,
-  timeout: number = 1000,
+  timeout: number | null = 1000,
   retries: number = 3,
 ) {
   return new Promise((resolve, reject) => {
@@ -50,15 +50,17 @@ export function browserMessageRequest(
       resolve(response);
     });
 
-    function sendMessage(attempt: number) {
+    async function sendMessage(attempt: number) {
       if (resolved) return;
       if (attempt > retries) {
         reject(`Extension did not respond after ${retries} tries.`);
       } else {
-        browserMessageSend(extensionName, messageName, data);
-        setTimeout(() => {
-          sendMessage(attempt + 1);
-        }, timeout);
+        await browserMessageSend(extensionName, messageName, data);
+        if (timeout !== null) {
+          setTimeout(() => {
+            sendMessage(attempt + 1);
+          }, timeout);
+        }
       }
     }
 

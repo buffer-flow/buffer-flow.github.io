@@ -8,4 +8,9 @@
   html, body {
     color: white;
   }
+
+  /* Styles for an action button that is injected by a plugin */
+  .action-button-site-style {
+    @apply px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200;
+  }
 }
