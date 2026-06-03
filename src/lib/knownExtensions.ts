@@ -1,5 +1,5 @@
 
-export type ExtensionId = 'linkem' | 'showem';
+export type ExtensionId = 'linkem';
 
 export type BrowserId = 'edge' | 'firefox' | 'chrome';
 
@@ -21,6 +21,9 @@ export interface ExtensionInfo {
 
   // Install links
   installLinks: { [key in BrowserId]?: string }
+
+  // Custom action messages
+  customActionMessages?: { [actionName: string]: string }
 }
 
 export const KNOWN_EXTENSIONS: { [key in ExtensionId]: ExtensionInfo } = {
@@ -31,11 +34,9 @@ export const KNOWN_EXTENSIONS: { [key in ExtensionId]: ExtensionInfo } = {
       'edge': 'https://microsoftedge.microsoft.com/addons/detail/linkem/bbhhinakjmmlhnlofjojomdjpncamdbo',
       'chrome': 'https://chromewebstore.google.com/detail/linkem/gnpjkejilcbnhiohfbamleiajfakoamn',
       'firefox': 'https://addons.mozilla.org/en-US/firefox/addon/linkem/',
+    },
+    customActionMessages: {
+      'import-link': "You have received a Link'em import"
     }
   },
-  'showem': {
-    id: 'showem',
-    displayName: "Show'em",
-    installLinks: {}
-  }
 }

@@ -77,6 +77,7 @@ function DetectAndSendActionView({ extensionId, actionName, actionData, redirect
   const { detectAndActionState, actionError, redirectTimer } = useDetectAndSendAction({ extensionId, actionName, actionData, redirectUrl });
   const extensionInfo = KNOWN_EXTENSIONS[extensionId];
   const niceActionName = actionName.replaceAll('-', ' ').replaceAll('_', ' ');
+  const processingMsg = extensionInfo.customActionMessages?.[actionName] || `${extensionInfo.displayName} is working on ${niceActionName}`;
   return (
     <>
       <div className="flex items-center justify-center min-h-screen p-8 relative z-10">
@@ -94,8 +95,12 @@ function DetectAndSendActionView({ extensionId, actionName, actionData, redirect
             </div>
           ) : detectAndActionState === 'installed' || detectAndActionState === 'processing' ? (
             <div className="border border-white/40 rounded-xl p-12 text-center text-white">
-              <h1 className="text-3xl font-bold mb-4 text-shadow">Asking {extensionInfo.displayName} to {niceActionName}...</h1> 
-              <div id='action-display-anchor' className='pt-6'><button className='action-button-site-style'>Click here</button></div>
+              {detectAndActionState === 'installed' ? (
+                <h1 className="text-3xl font-bold mb-4 text-shadow">Extension detected! Sending Asking {extensionInfo.displayName} to {niceActionName}...</h1>
+              ) : (
+                <h1 className="text-3xl font-bold mb-4 text-shadow">{processingMsg}</h1>
+              )}
+              <div id='action-display-anchor' className='pt-6' />
             </div>
           ) : detectAndActionState === 'error' ? (
             <div className="border border-white/40 rounded-xl p-12 text-center text-white">
