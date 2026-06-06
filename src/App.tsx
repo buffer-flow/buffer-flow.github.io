@@ -4,6 +4,7 @@ import { LinkemPage } from './pages/LinkemPage'
 import { ShowemPage } from './pages/ShowemPage'
 import { MsgPage } from './pages/MsgPage'
 import { AnimatedBackground } from './components/AnimatedBackground'
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/linkem" element={<LinkemPage />} />
         <Route path="/showem" element={<ShowemPage />} />
         <Route path="/msg" element={<MsgPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
       </Routes>
     </HashRouter>
   )
