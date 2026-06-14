@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ExtensionDownloadButtons } from '../components/ExtensionDownloadButtons';
 
 
 const LINKEM_DEMO_URL = '/#/msg?for=linkem&name=import-link&base64=eyJjb25kaXRpb25zIjpbeyJjcmVhdGVkX2F0IjoiIiwiaWQiOiIiLCJsaW5rX2lkIjoiIiwidHlwZSI6InVybF9zdGFydCIsInZhbHVlIjoiaHR0cHM6Ly93d3cuZ29vZHJlYWRzLmNvbS9ib29rL3Nob3cvNjA1MzE0MDYtdHJlc3Mtb2YtdGhlLWVtZXJhbGQtc2VhIn0seyJjcmVhdGVkX2F0IjoiIiwiaWQiOiIiLCJsaW5rX2lkIjoiIiwidHlwZSI6InhwYXRoX2V4aXN0cyIsInZhbHVlIjoiLy9kaXZbQGlkPVwiX19uZXh0XCJdL2RpdlsyXS9tYWluWzFdL2RpdlsxXS9kaXZbMl0vZGl2WzJdL2RpdlsxXS9kaXZbMV0vaDFbMV0ifV0sImNyZWF0ZWRfYXQiOiIyMDI2LTA1LTExVDE4OjU0OjAxLjc5MloiLCJkaXNwbGF5X25hbWUiOiJDbGljayBoZXJlIiwiaHJlZl9mb3JtYXQiOiJodHRwczovL3d3dy5nb29nbGUuY29tL3NlYXJjaD9xPXt0ZXh0LXZhbHVlfSIsImljb24iOm51bGwsImlkIjoibG9jYWwtYzU2MDhmNjQtMTNkYi00Y2JmLWE3NzctMzZjNDU3N2YyYzc4LTc0OWU0YTZiLTEzNjItNDA0NC1iNDUxLWRhYWZjZDlhMjdkYSIsIm5hbWUiOiJMaW5rIG9uIEVtZXJhbGQiLCJvbl9zZWxlY3RlZF90ZXh0X3JlZ2V4IjoiRW1lcmFsZCIsIm9uX3hwYXRoIjoiLy9kaXZbQGlkPVwiX19uZXh0XCJdL2RpdlsyXS9tYWluWzFdL2RpdlsxXS9kaXZbMl0vZGl2WzJdL2RpdlsxXS9kaXZbMV0vaDFbMV0iLCJwb3NpdGlvbiI6Im5leHRfdG9fdGV4dCIsInVwZGF0ZWRfYXQiOiIyMDI2LTA1LTExVDE4OjU0OjAxLjc5MloiLCJ1c2VyX2lkIjoibG9jYWwtYzU2MDhmNjQtMTNkYi00Y2JmLWE3NzctMzZjNDU3N2YyYzc4IiwidmlzaWJpbGl0eSI6InByaXZhdGUifQ==&redirectUrl=https://www.goodreads.com/book/show/60531406-tress-of-the-emerald-sea';
@@ -45,9 +46,14 @@ export function LinkemPage() {
           </section>
 
           <section className="mb-8 space-y-4 rounded-xl border border-white/20 bg-white/10 p-8 backdrop-blur-md">
+            <h2 className="text-3xl font-bold">Install Link'em</h2>
+            <ExtensionDownloadButtons extensionId="linkem" />
+          </section>
+
+          <section className="mb-8 space-y-4 rounded-xl border border-white/20 bg-white/10 p-8 backdrop-blur-md">
             <h2 className="text-3xl font-bold">Get Started</h2>
             <a href={LINKEM_DEMO_URL} className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
-              Try the Demo
+              Try a demo link
             </a>
           </section>
         </main>
